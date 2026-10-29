@@ -1,6 +1,6 @@
 # OllamaOnTV
 
-![OllamaOnTV home](docs/screenshots/home.png)
+![OllamaOnTV home](docs/screenshots/home-v2.png)
 ![The About screen credits Ansfidine Youssouf](docs/screenshots/about.png)
 ![Settings with the model dropdown and voice picker](docs/screenshots/settings.png)
 

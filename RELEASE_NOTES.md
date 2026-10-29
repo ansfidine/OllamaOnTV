@@ -17,7 +17,7 @@ project for his TV.
 
 ## Screenshots
 
-![Home](docs/screenshots/home.png)
+![Home](docs/screenshots/home-v2.png)
 ![About](docs/screenshots/about.png)
 ![Settings](docs/screenshots/settings.png)
 
