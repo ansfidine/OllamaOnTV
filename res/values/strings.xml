@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OllamaOnTV</string>
+    <string name="key_service_label">OllamaOnTV button listener</string>
+    <string name="key_service_desc">Starts OllamaOnTV when the Google Assistant / voice button on the remote is pressed. It never reads the screen or any app content.</string>
+</resources>

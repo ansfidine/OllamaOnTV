@@ -1,0 +1,9 @@
+out/
+*.apk
+*.idsig
+*.keystore
+config.json
+.ollama_cloud_key
+__pycache__/
+config.properties
+.DS_Store
