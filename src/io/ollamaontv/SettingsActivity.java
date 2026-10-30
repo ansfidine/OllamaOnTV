@@ -79,7 +79,27 @@ public class SettingsActivity extends Activity {
         root.setPadding(UiKit.dp(this, 64), UiKit.dp(this, 36), UiKit.dp(this, 64), UiKit.dp(this, 44));
         scroll.addView(root);
 
-        root.addView(UiKit.text(this, "Settings", 36, 0xFFF8FAFC, true));
+        TextView back = UiKit.text(this, "←", 22, UiKit.INK, true);
+        back.setGravity(android.view.Gravity.CENTER);
+        back.setIncludeFontPadding(false);
+        back.setMinWidth(0);
+        back.setMinHeight(0);
+        back.setPadding(0, 0, 0, 0);
+        back.setContentDescription("Back");
+        back.setBackground(UiKit.glass(this, 99, 0x1FFFFFFF, 0x33FFFFFF));
+        back.setFocusable(true);
+        back.setOnClickListener(v -> finish());
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        back.setLayoutParams(new LinearLayout.LayoutParams(UiKit.dp(this, 44), UiKit.dp(this, 44)));
+        header.addView(back);
+        TextView settingsTitle = UiKit.text(this, "Settings", 36, 0xFFF8FAFC, true);
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        titleParams.leftMargin = UiKit.dp(this, 14);
+        header.addView(settingsTitle, titleParams);
+        root.addView(header);
         root.addView(UiKit.text(this, "Ollama Cloud or a local Ollama server", 16, 0xFF94A3B8, false),
                 UiKit.params(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 6, this));
 

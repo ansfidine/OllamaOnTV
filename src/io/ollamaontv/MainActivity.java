@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -45,9 +45,11 @@ public class MainActivity extends Activity {
     private EditText searchInput;
     private LinearLayout detailActions;
     private TextView detailChip, detailTitle, detailMeta, detailDescription;
-    private HomeRow continueRow, modelsRow, appsRow, promptsRow, savedRow;
+    private HomeRow continueRow, modelsRow, promptsRow, savedRow;
+    private View heroView;
+    private TextView homeNav, modelsNav, savedNav;
+    private ImageView detailLogo;
     private final List<OllamaClient.Model> models = new ArrayList<>();
-    private final List<TvControl.AppEntry> apps = new ArrayList<>();
 
     private static final String[] PROMPTS = {
             "What is the weather in Shanghai today?",
@@ -69,7 +71,6 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(build());
         requestMicrophone();
-        loadApps();
         loadModels();
         loadContinue();
         loadPrompts();
@@ -80,7 +81,6 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         if (models.isEmpty()) loadModels();
-        if (apps.isEmpty()) loadApps();
         if (continueRow != null) loadContinue();
         loadSaved();
     }
@@ -101,15 +101,14 @@ public class MainActivity extends Activity {
         feed = new LinearLayout(this);
         feed.setOrientation(LinearLayout.VERTICAL);
         feed.setPadding(0, 0, 0, UiKit.dp(this, 60));
-        feed.addView(hero());
+        heroView = hero();
+        feed.addView(heroView);
         continueRow = new HomeRow(this, "Continue the conversation");
         modelsRow = new HomeRow(this, "Models");
-        appsRow = new HomeRow(this, "TV Apps");
         promptsRow = new HomeRow(this, "Prompt ideas");
         savedRow = new HomeRow(this, "Saved");
         feed.addView(continueRow, rowParams());
         feed.addView(modelsRow, rowParams());
-        feed.addView(appsRow, rowParams());
         feed.addView(promptsRow, rowParams());
         feed.addView(savedRow, rowParams());
         AppLog.w("home feed children=" + feed.getChildCount());
@@ -117,6 +116,7 @@ public class MainActivity extends Activity {
                 + " top=" + continueRow.getTop() + " models top=" + modelsRow.getTop()
                 + " feed h=" + feed.getHeight() + " scroll h=" + scroll.getHeight()));
         scroll.addView(feed);
+        showSection("home");
         page.addView(scroll, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
         root.addView(page, new FrameLayout.LayoutParams(
@@ -153,23 +153,29 @@ public class MainActivity extends Activity {
         brand.setLetterSpacing(0.06f);
         TextView brand2 = UiKit.text(this, "ON TV", 26, UiKit.CYAN, true);
         brand2.setLetterSpacing(0.06f);
+        ImageView brandLogo = new ImageView(this);
+        brandLogo.setImageResource(R.drawable.logo_app);
+        LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(UiKit.dp(this, 38), UiKit.dp(this, 38));
+        logoParams.rightMargin = UiKit.dp(this, 10);
+        bar.addView(brandLogo, logoParams);
         bar.addView(brand);
         bar.addView(brand2);
 
         View spacer = new View(this);
         bar.addView(spacer, new LinearLayout.LayoutParams(0, 1, 1f));
 
-        bar.addView(nav("Home", this::scrollTop, true));
+        homeNav = nav("Home", () -> showSection("home"), true);
+        bar.addView(homeNav);
         bar.addView(nav("Chat", () -> openChat(null), false));
-        bar.addView(nav("Models", () -> scrollTo(modelsRow), false));
-        bar.addView(nav("TV", () -> scrollTo(appsRow), false));
-        bar.addView(nav("Saved", () -> scrollTo(savedRow), false));
+        modelsNav = nav("Models", () -> showSection("models"), false);
+        bar.addView(modelsNav);
+        savedNav = nav("Saved", () -> showSection("saved"), false);
+        bar.addView(savedNav);
 
         View spacer2 = new View(this);
         bar.addView(spacer2, new LinearLayout.LayoutParams(0, 1, 1f));
 
         bar.addView(pill("Search", this::showSearch));
-        bar.addView(pill("Voice", this::openAssist));
         bar.addView(pill("Settings", this::showQuick));
         bar.addView(avatar());
         return bar;
@@ -309,7 +315,7 @@ public class MainActivity extends Activity {
         Button explore = UiKit.button(this, "Explore models", false);
         explore.setOnClickListener(v -> {
             SoundFx.select();
-            scrollTo(modelsRow);
+            showSection("models");
         });
         actions.addView(talk);
         LinearLayout.LayoutParams chatParams = new LinearLayout.LayoutParams(
@@ -422,55 +428,12 @@ public class MainActivity extends Activity {
         return out.toString();
     }
 
-    private void loadApps() {
-        new Thread(() -> {
-            List<TvControl.AppEntry> list = TvControl.apps(this);
-            handler.post(() -> {
-                apps.clear();
-                apps.addAll(list);
-                renderApps();
-            });
-        }, "home-apps").start();
-    }
-
-    private void renderApps() {
-        appsRow.removeAllViews();
-        PackageManager manager = getPackageManager();
-        int[] colors = {0xFF1D4ED8, 0xFF7C3AED, 0xFF0F766E, 0xFF9A3412, 0xFFBE123C};
-        for (int i = 0; i < apps.size() && i < 12; i++) {
-            TvControl.AppEntry app = apps.get(i);
-            Drawable icon = null;
-            try {
-                icon = manager.getApplicationIcon(app.packageName);
-            } catch (Exception ignored) {
-            }
-            FocusCard card = new FocusCard(this, app.label, "Open app", colors[i % colors.length], 0xFF0B1026);
-            if (icon != null) card.icon(icon);
-            card.onCardClick(() -> launchApp(app));
-            appsRow.add(card);
-        }
-    }
-
-    private void launchApp(TvControl.AppEntry app) {
-        new Thread(() -> {
-            try {
-                JSONObject args = new JSONObject();
-                args.put("name", app.label);
-                TvControl.execute(this, "launch_app", args, s -> {
-                });
-                handler.post(() -> toast("Opening " + app.label));
-            } catch (Exception e) {
-                String message = e.getMessage() == null ? e.toString() : e.getMessage();
-                handler.post(() -> toast(message));
-            }
-        }, "launch-app").start();
-    }
 
     private void loadSaved() {
-        savedRow.removeAllViews();
+        savedRow.clear();
         List<JSONObject> items = savedItems();
         if (items.isEmpty()) {
-            FocusCard card = new FocusCard(this, "Nothing saved yet", "Use Save on a model, app or prompt", UiKit.CYAN, 0xFF0B3B45);
+            FocusCard card = new FocusCard(this, "Nothing saved yet", "Use Save on a model or prompt", UiKit.CYAN, 0xFF0B3B45);
             card.onCardClick(() -> openChat("What can you do?"));
             savedRow.add(card);
             return;
@@ -483,6 +446,7 @@ public class MainActivity extends Activity {
             String value = item.optString("value", "");
             FocusCard card = new FocusCard(this, title, type.toUpperCase(Locale.ROOT) + "  ·  saved",
                     i % 2 == 0 ? 0xFF0E7490 : 0xFF4C1D95, 0xFF0B1026);
+            if ("model".equals(type)) card.icon(LogoKit.logo(this, title));
             card.onCardClick(() -> openSaved(type, title, value));
             savedRow.add(card);
         }
@@ -492,16 +456,8 @@ public class MainActivity extends Activity {
         if ("prompt".equals(type)) {
             showDetails("SAVED PROMPT", title, "Saved prompt", value, "Ask this", () -> openChat(value));
         } else if ("app".equals(type)) {
-            TvControl.AppEntry found = null;
-            for (TvControl.AppEntry app : apps) {
-                if (app.label.equals(title) || app.packageName.equals(value)) {
-                    found = app;
-                    break;
-                }
-            }
-            final TvControl.AppEntry app = found;
-            showDetails("SAVED APP", title, value, "Open this app from your collection.", "Open app",
-                    app == null ? () -> toast("App not found") : () -> launchApp(app));
+            showDetails("SAVED APP", title, value, "Ask OllamaOnTV to open this app.", "Ask OllamaOnTV",
+                    () -> openChat("Open " + title));
         } else {
             showDetails("SAVED MODEL", title, value, "Use this model for your next conversation.", "Use model",
                     () -> selectModel(title));
@@ -537,12 +493,48 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
+    private void showSection(String section) {
+        setActiveNav(section);
+        boolean home = "home".equals(section);
+        heroView.setVisibility(home ? View.VISIBLE : View.GONE);
+        continueRow.setVisibility(home ? View.VISIBLE : View.GONE);
+        modelsRow.setVisibility("models".equals(section) ? View.VISIBLE : View.GONE);
+        promptsRow.setVisibility(home ? View.VISIBLE : View.GONE);
+        savedRow.setVisibility("saved".equals(section) ? View.VISIBLE : View.GONE);
+        scroll.scrollTo(0, 0);
+    }
+
+    private void setActiveNav(String section) {
+        setNavActive(homeNav, "home".equals(section));
+        setNavActive(modelsNav, "models".equals(section));
+        setNavActive(savedNav, "saved".equals(section));
+    }
+
+    private void setNavActive(TextView view, boolean active) {
+        if (view != null) view.setTextColor(active ? UiKit.INK : UiKit.MUTED);
+    }
+
     private void scrollTop() {
         scroll.smoothScrollTo(0, 0);
     }
 
     private void scrollTo(View row) {
         scroll.post(() -> scroll.smoothScrollTo(0, Math.max(0, row.getTop() - UiKit.dp(this, 30))));
+    }
+
+    private TextView backButton(View overlay) {
+        TextView back = UiKit.text(this, "←", 22, UiKit.INK, true);
+        back.setGravity(Gravity.CENTER);
+        back.setIncludeFontPadding(false);
+        back.setMinWidth(0);
+        back.setMinHeight(0);
+        back.setPadding(0, 0, 0, 0);
+        back.setContentDescription("Back");
+        back.setBackground(UiKit.glass(this, 99, 0x1FFFFFFF, 0x33FFFFFF));
+        back.setFocusable(true);
+        back.setOnClickListener(v -> closeOverlay(overlay));
+        back.setLayoutParams(new LinearLayout.LayoutParams(UiKit.dp(this, 44), UiKit.dp(this, 44)));
+        return back;
     }
 
     private FrameLayout quickSettings() {
@@ -560,9 +552,15 @@ public class MainActivity extends Activity {
         FrameLayout.LayoutParams panelParams = new FrameLayout.LayoutParams(
                 UiKit.dp(this, 420), FrameLayout.LayoutParams.MATCH_PARENT, Gravity.RIGHT);
         overlay.addView(panel, panelParams);
-
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.addView(backButton(overlay));
         TextView title = UiKit.text(this, "Quick settings", 28, UiKit.INK, true);
-        panel.addView(title);
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        titleParams.leftMargin = UiKit.dp(this, 14);
+        header.addView(title, titleParams);
+        panel.addView(header);
         panel.addView(UiKit.text(this, "Your console at a glance", 14, UiKit.MUTED, false),
                 UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 4, this));
 
@@ -639,7 +637,7 @@ public class MainActivity extends Activity {
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
         TextView title = UiKit.text(this, "Search", 40, UiKit.INK, true);
-        TextView subtitle = UiKit.text(this, "Models, apps and prompts — all in one place.", 16, UiKit.MUTED, false);
+        TextView subtitle = UiKit.text(this, "Models, prompts and saved items — all in one place.", 16, UiKit.MUTED, false);
         panel.addView(title);
         panel.addView(subtitle, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 4, this));
@@ -691,15 +689,6 @@ public class MainActivity extends Activity {
                 showModelDetails(model);
             });
             if (++shown >= 8) return;
-        }
-        for (TvControl.AppEntry app : apps) {
-            if (!app.label.toLowerCase(Locale.ROOT).contains(q)
-                    && !app.packageName.toLowerCase(Locale.ROOT).contains(q)) continue;
-            addSearchRow("APP", app.label, "Open app", () -> {
-                closeOverlay(searchPanel);
-                launchApp(app);
-            });
-            if (++shown >= 12) return;
         }
         for (String prompt : PROMPTS) {
             if (!prompt.toLowerCase(Locale.ROOT).contains(q)) continue;
@@ -761,8 +750,23 @@ public class MainActivity extends Activity {
         FrameLayout.LayoutParams panelParams = new FrameLayout.LayoutParams(
                 UiKit.dp(this, 760), FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         overlay.addView(panel, panelParams);
-
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        detailLogo = new ImageView(this);
+        detailLogo.setImageResource(R.drawable.logo_full);
+        detailLogo.setAdjustViewBounds(true);
+        detailLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        detailLogo.setVisibility(View.GONE);
+        LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, UiKit.dp(this, 150));
+        logoParams.bottomMargin = UiKit.dp(this, 18);
+        panel.addView(detailLogo, logoParams);
         detailChip = UiKit.text(this, "", 11, UiKit.CYAN, true);
+        LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        chipParams.leftMargin = UiKit.dp(this, 14);
+        header.addView(detailChip, chipParams);
+        panel.addView(header);
         detailChip.setLetterSpacing(0.16f);
         detailTitle = UiKit.text(this, "", 34, UiKit.INK, true);
         detailMeta = UiKit.text(this, "", 14, UiKit.MUTED, false);
@@ -771,7 +775,6 @@ public class MainActivity extends Activity {
         detailActions = new LinearLayout(this);
         detailActions.setOrientation(LinearLayout.HORIZONTAL);
 
-        panel.addView(detailChip);
         panel.addView(detailTitle, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 8, this));
         panel.addView(detailMeta, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -785,6 +788,7 @@ public class MainActivity extends Activity {
 
     private void showDetails(String chip, String title, String meta, String description,
                              String actionLabel, Runnable action) {
+        detailLogo.setVisibility(View.GONE);
         detailChip.setText(chip);
         detailTitle.setText(title);
         detailMeta.setText(meta);
@@ -859,6 +863,7 @@ public class MainActivity extends Activity {
                 "OllamaOnTV was developed by Ansfidine Youssouf as a fun project for his TV. "
                         + "The AI models are served by Ollama Cloud; the app, voice console and design are his.",
                 "Open settings", this::openSettings);
+        detailLogo.setVisibility(View.VISIBLE);
     }
 
     private void showSearch() {

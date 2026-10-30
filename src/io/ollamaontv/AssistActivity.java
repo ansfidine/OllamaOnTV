@@ -285,4 +285,8 @@ public class AssistActivity extends Activity {
         speech.stop();
         super.onDestroy();
     }
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

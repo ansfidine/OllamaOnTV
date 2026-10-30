@@ -1,8 +1,16 @@
 # OllamaOnTV
 
-![OllamaOnTV home](docs/screenshots/home-v2.png)
-![The About screen credits Ansfidine Youssouf](docs/screenshots/about.png)
-![Settings with the model dropdown and voice picker](docs/screenshots/settings.png)
+![OllamaOnTV](docs/screenshots/logo.png)
+
+| Home | Models |
+| --- | --- |
+| ![Home](docs/screenshots/home-v2.png) | ![Models](docs/screenshots/models.png) |
+| **Saved** | **Chat** |
+| ![Saved](docs/screenshots/saved.png) | ![Chat](docs/screenshots/chat.png) |
+| **Settings** | **About** |
+| ![Settings](docs/screenshots/settings.png) | ![About](docs/screenshots/about.png) |
+| **Search** | |
+| ![Search](docs/screenshots/search.png) | |
 
 A cinematic, voice-first AI console for Android TV / projector, developed by **Ansfidine
 Youssouf** as a fun project for his TV (built and tested on an Anker Nebula Capsule 3 Laser,

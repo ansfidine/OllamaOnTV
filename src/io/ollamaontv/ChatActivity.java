@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -70,7 +71,26 @@ public class ChatActivity extends Activity {
                 new int[]{UiKit.BG, UiKit.BG2}));
 
         TextView title = UiKit.text(this, "OllamaOnTV", 36, 0xFFF8FAFC, true);
-        root.addView(title);
+        TextView back = UiKit.text(this, "←", 22, UiKit.INK, true);
+        back.setGravity(android.view.Gravity.CENTER);
+        back.setIncludeFontPadding(false);
+        back.setMinWidth(0);
+        back.setMinHeight(0);
+        back.setPadding(0, 0, 0, 0);
+        back.setContentDescription("Back");
+        back.setBackground(UiKit.glass(this, 99, 0x1FFFFFFF, 0x33FFFFFF));
+        back.setFocusable(true);
+        back.setOnClickListener(v -> finish());
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        back.setLayoutParams(new LinearLayout.LayoutParams(UiKit.dp(this, 44), UiKit.dp(this, 44)));
+        header.addView(back);
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        titleParams.leftMargin = UiKit.dp(this, 14);
+        header.addView(title, titleParams);
+        root.addView(header);
 
         TextView subtitle = UiKit.text(this, "by Ansfidine Youssouf  ·  AI chat", 16, UiKit.MUTED, false);
         root.addView(subtitle, UiKit.params(LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -106,7 +126,17 @@ public class ChatActivity extends Activity {
         input.setImeOptions(EditorInfo.IME_ACTION_SEND);
         UiKit.focusable(input, this, UiKit.GLASS_STRONG, 0x33FFFFFF);
         input.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEND) {
+            if (actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_DONE) {
+                send();
+                return true;
+            }
+            return false;
+        });
+        input.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN
+                    && (keyCode == KeyEvent.KEYCODE_ENTER
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
+                    || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)) {
                 send();
                 return true;
             }
@@ -225,5 +255,9 @@ public class ChatActivity extends Activity {
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             status.setText("Microphone ready.");
         }
+    }
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

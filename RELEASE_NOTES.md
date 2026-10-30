@@ -14,6 +14,11 @@ project for his TV.
 - VPN-aware connection errors: switch VPN server / disable VPN, or start the local relay
 - Settings **Test connection** and a retrying Models error card
 - Fixed the home carousel rows not rendering (clear cards without removing the row container)
+- Official OllamaOnTV logo: launcher icon, top bar mark, About screen, README
+- Models and Saved are dedicated filtered tabs; Home stays Home
+- Provider logos on model cards and saved model cards
+- Compact circular back buttons; no duplicate back where a Close exists
+- Removed the TV Apps launcher tab (the assistant still opens apps by voice)
 - Model cards now show provider logos (DeepSeek, Mistral, NVIDIA, Kimi, GLM, Gemma, MiniMax, Meta, OpenAI)
 - Developer credit: every model is told the app was developed by Ansfidine Youssouf
 - Boot service, assistant role and accessibility fallback
