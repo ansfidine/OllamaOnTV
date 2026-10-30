@@ -26,9 +26,9 @@ project for his TV.
 
 ## Screenshots
 
-![Home](docs/screenshots/home-v2.png)
-![About](docs/screenshots/about.png)
-![Settings](docs/screenshots/settings.png)
+![Home](https://raw.githubusercontent.com/ansfidine/OllamaOnTV/main/docs/screenshots/home-v3.png)
+![About](https://raw.githubusercontent.com/ansfidine/OllamaOnTV/main/docs/screenshots/about-v2.png)
+![Settings](https://raw.githubusercontent.com/ansfidine/OllamaOnTV/main/docs/screenshots/settings-v2.png)
 
 ## Install
 
