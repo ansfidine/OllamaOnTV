@@ -4,13 +4,13 @@
 
 | Home | Models |
 | --- | --- |
-| ![Home](docs/screenshots/home-v2.png) | ![Models](docs/screenshots/models.png) |
+| ![Home](docs/screenshots/home-v3.png) | ![Models](docs/screenshots/models-v2.png) |
 | **Saved** | **Chat** |
-| ![Saved](docs/screenshots/saved.png) | ![Chat](docs/screenshots/chat.png) |
+| ![Saved](docs/screenshots/saved-v2.png) | ![Chat](docs/screenshots/chat-v2.png) |
 | **Settings** | **About** |
-| ![Settings](docs/screenshots/settings.png) | ![About](docs/screenshots/about.png) |
+| ![Settings](docs/screenshots/settings-v2.png) | ![About](docs/screenshots/about-v2.png) |
 | **Search** | |
-| ![Search](docs/screenshots/search.png) | |
+| ![Search](docs/screenshots/search-v2.png) | |
 
 A cinematic, voice-first AI console for Android TV / projector, developed by **Ansfidine
 Youssouf** as a fun project for his TV (built and tested on an Anker Nebula Capsule 3 Laser,
