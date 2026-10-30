@@ -177,7 +177,7 @@ public class MainActivity extends Activity {
 
         bar.addView(pill("Search", this::showSearch));
         bar.addView(pill("Settings", this::showQuick));
-        bar.addView(avatar());
+        bar.addView(pill("About", this::showAbout));
         return bar;
     }
 
@@ -232,25 +232,7 @@ public class MainActivity extends Activity {
         return view;
     }
 
-    private TextView avatar() {
-        TextView view = UiKit.text(this, "AY", 13, 0xFFFFFFFF, true);
-        view.setGravity(Gravity.CENTER);
-        view.setBackground(UiKit.gradient(this, 99, UiKit.PURPLE, UiKit.BLUE));
-        LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(
-                UiKit.dp(this, 40), UiKit.dp(this, 40));
-        avatarParams.leftMargin = UiKit.dp(this, 12);
-        view.setLayoutParams(avatarParams);
-        view.setFocusable(true);
-        view.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) SoundFx.nav();
-            if (UiKit.motion(this)) v.animate().scaleX(hasFocus ? 1.12f : 1f).scaleY(hasFocus ? 1.12f : 1f).setDuration(150).start();
-        });
-        view.setOnClickListener(v -> {
-            SoundFx.select();
-            showAbout();
-        });
-        return view;
-    }
+
 
 
     private View hero() {
