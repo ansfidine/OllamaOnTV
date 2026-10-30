@@ -49,3 +49,7 @@ with your key in `~/.ollama_cloud_key`. Never commit the key.
 Ollama Cloud, deepseek-v4.1-flash, Microsoft Edge TTS, Vosk, Free My TV's ADB client (MIT), Inter
 (SIL OFL 1.1), Material Symbols (Apache 2.0), Android SDK/JDK and macOS LaunchAgents. UI/UX and
 app code by Ansfidine Youssouf (MIT).
+
+- About pill in the top bar replaces the AY avatar
+- TV banner app icon with the full OllamaOnTV logo and readable wordmark
+- Transparent logo inside the app (top bar and About)
