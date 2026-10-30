@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -49,7 +50,8 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(build());
-        loadModels();
+        if (!Prefs.apiKey().isEmpty()) loadModels();
+        else modelsStatus.setText("Enter your API key, then tap Connect.");
         if (getIntent().getBooleanExtra("test_tv", false)) {
             endpointField.post(this::testTvControl);
         }
@@ -112,12 +114,13 @@ public class SettingsActivity extends Activity {
         root.addView(label("API key"));
         keyField = field(Prefs.apiKey(), "Ollama Cloud API key (ollama.com/settings/keys)", InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD, 1);
+        keyField.setTransformationMethod(PasswordTransformationMethod.getInstance());
         root.addView(keyField, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT, UiKit.dp(this, 52), 4, this));
 
         LinearLayout loadRow = new LinearLayout(this);
         loadRow.setOrientation(LinearLayout.HORIZONTAL);
         loadRow.setGravity(Gravity.CENTER_VERTICAL);
-        loadButton = UiKit.button(this, "Load models", false);
+        loadButton = UiKit.button(this, "Connect", false);
         loadButton.setOnClickListener(v -> loadModels());
         loadRow.addView(loadButton, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, UiKit.dp(this, 52)));
@@ -128,10 +131,6 @@ public class SettingsActivity extends Activity {
         loadRow.addView(modelsStatus, statusParams);
         root.addView(loadRow, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 18, this));
-
-        Button testConnection = UiKit.button(this, "Test connection", false);
-        testConnection.setOnClickListener(v -> testConnection());
-        root.addView(testConnection, UiKit.params(LinearLayout.LayoutParams.WRAP_CONTENT, UiKit.dp(this, 48), 8, this));
 
         selectedModel = UiKit.text(this, selectedText(), 16, 0xFF7DD3FC, false);
         root.addView(selectedModel, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -314,21 +313,7 @@ public class SettingsActivity extends Activity {
         return model.isEmpty() ? "No model selected" : "Selected model: " + model;
     }
 
-    private void testConnection() {
-        final String url = endpointField.getText().toString();
-        final String key = keyField.getText().toString();
-        modelsStatus.setText("Testing connection...");
-        new Thread(() -> {
-            try {
-                List<OllamaClient.Model> list = OllamaClient.models(url, key);
-                runOnUiThread(() -> modelsStatus.setText("Online — " + list.size() + " models"));
-            } catch (Exception e) {
-                String message = e.getMessage() == null ? e.toString() : e.getMessage();
-                final String friendly = Net.friendly(this, url, message);
-                runOnUiThread(() -> modelsStatus.setText(friendly));
-            }
-        }, "test-connection").start();
-    }
+
 
     private void loadVoices() {
         String url = ttsField.getText().toString().trim();
@@ -385,8 +370,12 @@ public class SettingsActivity extends Activity {
     }
 
     private void loadModels() {
+        if (keyField.getText().toString().trim().isEmpty()) {
+            modelsStatus.setText("Enter your API key, then tap Connect.");
+            return;
+        }
         loadButton.setEnabled(false);
-        modelsStatus.setText("Loading models...");
+        modelsStatus.setText("Connecting...");
         final String endpoint = endpointField.getText().toString();
         final String key = keyField.getText().toString();
         new Thread(() -> {
@@ -395,7 +384,7 @@ public class SettingsActivity extends Activity {
                 runOnUiThread(() -> {
                     loadedModels = models;
                     renderModels();
-                    modelsStatus.setText(models.size() + " models");
+                    modelsStatus.setText("Connected — " + models.size() + " models");
                     loadButton.setEnabled(true);
                 });
             } catch (Exception e) {

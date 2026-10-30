@@ -94,6 +94,7 @@ final class OllamaClient {
             connection.setConnectTimeout(connectMs);
             connection.setReadTimeout(readMs);
             connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("User-Agent", "OllamaOnTV/0.1.0");
             connection.setRequestProperty("Connection", "close");
             if (key != null && !key.trim().isEmpty()) {
                 connection.setRequestProperty("Authorization", "Bearer " + key.trim());

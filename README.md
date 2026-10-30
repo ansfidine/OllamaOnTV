@@ -8,7 +8,7 @@
 | **Saved** | **Chat** |
 | ![Saved](docs/screenshots/saved-v2.png) | ![Chat](docs/screenshots/chat-v2.png) |
 | **Settings** | **About** |
-| ![Settings](docs/screenshots/settings-v2.png) | ![About](docs/screenshots/about-v2.png) |
+| ![Settings](docs/screenshots/settings-v3.png) | ![About](docs/screenshots/about-v2.png) |
 | **Search** | |
 | ![Search](docs/screenshots/search-v2.png) | |
 

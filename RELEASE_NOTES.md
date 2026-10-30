@@ -53,3 +53,8 @@ app code by Ansfidine Youssouf (MIT).
 - About pill in the top bar replaces the AY avatar
 - TV banner app icon with the full OllamaOnTV logo and readable wordmark
 - Transparent logo inside the app (top bar and About)
+
+- Settings: one Connect button tests the connection and loads all models on success
+- API key field masked like a password
+- Models are no longer loaded at startup without a key
+- Direct Ollama Cloud requests use an OllamaOnTV User-Agent

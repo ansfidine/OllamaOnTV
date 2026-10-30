@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(build());
         requestMicrophone();
-        loadModels();
+        if (!Prefs.apiKey().isEmpty()) loadModels();
         loadContinue();
         loadPrompts();
         loadSaved();
@@ -359,6 +359,7 @@ public class MainActivity extends Activity {
     }
 
     private void loadModels() {
+        if (Prefs.apiKey().isEmpty()) return;
         new Thread(() -> {
             try {
                 List<OllamaClient.Model> list = OllamaClient.models(Prefs.endpoint(), Prefs.apiKey());
