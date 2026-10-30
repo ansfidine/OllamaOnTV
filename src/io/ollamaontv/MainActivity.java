@@ -380,7 +380,17 @@ public class MainActivity extends Activity {
                     renderModels();
                 });
             } catch (Exception e) {
-                AppLog.w("home models: " + e.getMessage());
+                String message = e.getMessage() == null ? e.toString() : e.getMessage();
+                AppLog.w("home models: " + message);
+                final String friendly = Net.friendly(this, Prefs.endpoint(), message);
+                handler.post(() -> {
+                    modelsRow.removeAllViews();
+                    FocusCard error = new FocusCard(this, "Couldn't load models",
+                            Net.local(Prefs.endpoint()) ? "Start the relay / tap to retry" : "Check connection / tap to retry",
+                            0xFF9A3412, 0xFF0B1026);
+                    error.onCardClick(this::loadModels);
+                    modelsRow.add(error);
+                });
             }
         }, "home-models").start();
     }

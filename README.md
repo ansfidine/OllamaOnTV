@@ -197,6 +197,14 @@ If port 5555 is closed after a TV reboot, enable wireless debugging or run
 - If speech recognition is unavailable, the app still works as a text assistant. A future
   fallback can use Vosk/Whisper on the TV or a Whisper server on the LAN.
 
+## Troubleshooting the connection
+
+- If the cloud cannot be reached and a VPN is active, the app says so and asks you to switch
+  to another VPN server or turn the VPN off for OllamaOnTV. Settings also has **Test connection**.
+- If the endpoint is a local relay/Ollama, the app asks you to start the relay and run
+  `tools/connect.sh` (or switch to the cloud endpoint in Settings).
+- The Home Models row shows a **Couldn't load models** card that retries when selected.
+
 ## Privacy and security
 
 - The API key is stored in the relay's key file (mode 600) and in

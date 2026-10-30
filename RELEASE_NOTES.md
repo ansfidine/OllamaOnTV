@@ -11,6 +11,8 @@ project for his TV.
 - Neural Edge TTS voice (Aria), with the TV voice as fallback
 - TV control through the TV's own ADB: open apps, keys, volume, settings, YouTube search
 - Search, details, quick-settings and saved/watchlist overlays
+- VPN-aware connection errors: switch VPN server / disable VPN, or start the local relay
+- Settings **Test connection** and a retrying Models error card
 - Developer credit: every model is told the app was developed by Ansfidine Youssouf
 - Boot service, assistant role and accessibility fallback
 - Inter typography, navigation sounds and reduced-motion support

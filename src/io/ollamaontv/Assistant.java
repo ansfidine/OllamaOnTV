@@ -137,7 +137,8 @@ final class Assistant {
             } catch (Exception e) {
                 String error = e.getMessage() == null ? e.toString() : e.getMessage();
                 AppLog.w("assistant: " + error);
-                MAIN.post(() -> callback.onError(error));
+                final String friendly = Net.friendly(context, Prefs.endpoint(), error);
+                MAIN.post(() -> callback.onError(friendly));
             }
         });
     }

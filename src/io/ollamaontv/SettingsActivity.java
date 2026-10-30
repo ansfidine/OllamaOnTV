@@ -109,6 +109,10 @@ public class SettingsActivity extends Activity {
         root.addView(loadRow, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 18, this));
 
+        Button testConnection = UiKit.button(this, "Test connection", false);
+        testConnection.setOnClickListener(v -> testConnection());
+        root.addView(testConnection, UiKit.params(LinearLayout.LayoutParams.WRAP_CONTENT, UiKit.dp(this, 48), 8, this));
+
         selectedModel = UiKit.text(this, selectedText(), 16, 0xFF7DD3FC, false);
         root.addView(selectedModel, UiKit.params(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 16, this));
@@ -290,6 +294,22 @@ public class SettingsActivity extends Activity {
         return model.isEmpty() ? "No model selected" : "Selected model: " + model;
     }
 
+    private void testConnection() {
+        final String url = endpointField.getText().toString();
+        final String key = keyField.getText().toString();
+        modelsStatus.setText("Testing connection...");
+        new Thread(() -> {
+            try {
+                List<OllamaClient.Model> list = OllamaClient.models(url, key);
+                runOnUiThread(() -> modelsStatus.setText("Online — " + list.size() + " models"));
+            } catch (Exception e) {
+                String message = e.getMessage() == null ? e.toString() : e.getMessage();
+                final String friendly = Net.friendly(this, url, message);
+                runOnUiThread(() -> modelsStatus.setText(friendly));
+            }
+        }, "test-connection").start();
+    }
+
     private void loadVoices() {
         String url = ttsField.getText().toString().trim();
         if (url.isEmpty()) {
@@ -361,8 +381,9 @@ public class SettingsActivity extends Activity {
             } catch (Exception e) {
                 String message = e.getMessage() == null ? e.toString() : e.getMessage();
                 AppLog.w("models: " + message);
+                final String friendly = Net.friendly(SettingsActivity.this, endpoint, message);
                 runOnUiThread(() -> {
-                    modelsStatus.setText("Error: " + message);
+                    modelsStatus.setText(friendly);
                     loadButton.setEnabled(true);
                 });
             }
