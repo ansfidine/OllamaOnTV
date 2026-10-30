@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
         TextView brand2 = UiKit.text(this, "ON TV", 26, UiKit.CYAN, true);
         brand2.setLetterSpacing(0.06f);
         ImageView brandLogo = new ImageView(this);
-        brandLogo.setImageResource(R.drawable.logo_app);
+        brandLogo.setImageResource(R.drawable.logo_mark);
         LinearLayout.LayoutParams logoParams = new LinearLayout.LayoutParams(UiKit.dp(this, 38), UiKit.dp(this, 38));
         logoParams.rightMargin = UiKit.dp(this, 10);
         bar.addView(brandLogo, logoParams);
@@ -754,7 +754,7 @@ public class MainActivity extends Activity {
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         detailLogo = new ImageView(this);
-        detailLogo.setImageResource(R.drawable.logo_full);
+        detailLogo.setImageResource(R.drawable.logo_full_transparent);
         detailLogo.setAdjustViewBounds(true);
         detailLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
         detailLogo.setVisibility(View.GONE);
