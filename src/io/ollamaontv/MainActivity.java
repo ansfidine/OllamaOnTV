@@ -403,6 +403,7 @@ public class MainActivity extends Activity {
             OllamaClient.Model model = models.get(i);
             String meta = model.parameters.isEmpty() ? caps(model) : model.parameters + "  ·  " + caps(model);
             FocusCard card = new FocusCard(this, model.name, meta, colors[i % colors.length], 0xFF0B1026);
+            card.icon(LogoKit.logo(this, model.name));
             if (model.name.equals(current)) {
                 card.titleView().setText("[active] " + model.name);
             }
