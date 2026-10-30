@@ -384,7 +384,7 @@ public class MainActivity extends Activity {
                 AppLog.w("home models: " + message);
                 final String friendly = Net.friendly(this, Prefs.endpoint(), message);
                 handler.post(() -> {
-                    modelsRow.removeAllViews();
+                    modelsRow.clear();
                     FocusCard error = new FocusCard(this, "Couldn't load models",
                             Net.local(Prefs.endpoint()) ? "Start the relay / tap to retry" : "Check connection / tap to retry",
                             0xFF9A3412, 0xFF0B1026);
@@ -396,7 +396,7 @@ public class MainActivity extends Activity {
     }
 
     private void renderModels() {
-        modelsRow.removeAllViews();
+        modelsRow.clear();
         String current = Prefs.model();
         int[] colors = {0xFF4C1D95, 0xFF1D4ED8, 0xFF0E7490, 0xFF9A3412, 0xFF831843, 0xFF1E40AF};
         for (int i = 0; i < models.size() && i < 10; i++) {

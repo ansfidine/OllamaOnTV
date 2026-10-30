@@ -13,6 +13,7 @@ project for his TV.
 - Search, details, quick-settings and saved/watchlist overlays
 - VPN-aware connection errors: switch VPN server / disable VPN, or start the local relay
 - Settings **Test connection** and a retrying Models error card
+- Fixed the home carousel rows not rendering (clear cards without removing the row container)
 - Developer credit: every model is told the app was developed by Ansfidine Youssouf
 - Boot service, assistant role and accessibility fallback
 - Inter typography, navigation sounds and reduced-motion support

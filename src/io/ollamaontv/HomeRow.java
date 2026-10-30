@@ -36,6 +36,10 @@ public class HomeRow extends LinearLayout {
         addView(scroll, UiKit.params(LayoutParams.MATCH_PARENT, UiKit.dp(context, 190), 0, context));
     }
 
+    public void clear() {
+        cards.removeAllViews();
+    }
+
     public FocusCard add(FocusCard card) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 UiKit.dp(getContext(), 250), UiKit.dp(getContext(), 146));
